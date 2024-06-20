@@ -1,11 +1,19 @@
-FROM codercom/code-server:latest
+# Use a base image with Node.js and npm
+FROM ubuntu:20.04
 
-# Optional: Add custom configuration or install additional packages
-# RUN apt-get update && apt-get install -y <package_name>
+# Set environment variables to avoid user interaction during package installation
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Copy your Code Server config if you have one
-# COPY ./config.yaml /home/coder/.config/code-server/config.yaml
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y curl wget sudo apt-utils gnupg && \
+    apt-get clean
 
-EXPOSE 8080
+# Copy the start-code-server script into the container
+COPY start-code-server.sh /start-code-server.sh
 
-CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "--auth", "none"]
+# Make the script executable
+RUN chmod +x /start-code-server.sh
+
+# Run the script
+CMD ["/start-code-server.sh"]
